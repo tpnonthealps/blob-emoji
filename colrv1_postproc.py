@@ -21,10 +21,10 @@ import re
 from colrv1_add_soft_light_to_flags import add_soft_light_to_flags
 
 
-_CBDT_FILE = Path("fonts/NotoColorEmoji.ttf")
+_CBDT_FILE = Path("2D/fonts/NotoColorEmoji.ttf")
 _COLR_FILES = {
-    Path("fonts/Noto-COLRv1-noflags.ttf"),
-    Path("fonts/Noto-COLRv1.ttf"),
+    Path("2D/fonts/Noto-COLRv1-noflags.ttf"),
+    Path("2D/fonts/Noto-COLRv1.ttf"),
 }
 
 

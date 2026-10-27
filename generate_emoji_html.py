@@ -38,7 +38,7 @@ from nototools import unicode_data
 
 import add_aliases
 
-_default_dir = 'png/128'
+_default_dir = '2D/png/128'
 _default_ext = 'png'
 _default_prefix = 'emoji_u'
 _default_title = 'Emoji List'

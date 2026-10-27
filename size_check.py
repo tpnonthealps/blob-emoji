@@ -41,8 +41,8 @@ def _check_svg(base_dir, svg_dir):
 
 def main():
 	base_dir = Path(__file__).parent
-	image_dir = base_dir / "png"
-	svg_dir = base_dir / "svg"
+	image_dir = base_dir / "2D" / "png"
+	svg_dir = base_dir / "2D" / "svg"
 
 	assert image_dir.is_dir()
 	assert svg_dir.is_dir()
