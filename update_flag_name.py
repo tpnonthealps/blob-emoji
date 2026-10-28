@@ -23,7 +23,7 @@ _NAME_VALUES = [
 
 
 def main(argv):
-    font_file = "fonts/NotoColorEmoji-flagsonly.ttf"
+    font_file = "2D/fonts/NotoColorEmoji-flagsonly.ttf"
     font = ttLib.TTFont(font_file)
     name_table = font["name"]
     for (name_id, value) in _NAME_VALUES:

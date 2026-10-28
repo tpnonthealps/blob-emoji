@@ -22,11 +22,11 @@ python size_check.py
 rm -rf build/ && time make -j 48
 # Should take 2-3 minutes to create noto-emoji/NotoColorEmoji.ttf
 
-mv *.ttf fonts/
+mv *.ttf 2D/fonts/
 
 # make noflags CBDT font
-rm fonts/NotoColorEmoji-noflags.ttf
-python drop_flags.py fonts/NotoColorEmoji.ttf
+rm -f 2D/fonts/NotoColorEmoji-noflags.ttf
+python drop_flags.py 2D/fonts/NotoColorEmoji.ttf
 
 # Build the COLRv1 font (slow)
 
@@ -36,8 +36,8 @@ git diff colrv1/*.toml
 # Compile the fonts
 # Should take ~20 minutes
 (cd colrv1 && rm -rf build/ && time nanoemoji *.toml)
-cp colrv1/build/NotoColorEmoji.ttf fonts/Noto-COLRv1.ttf
-cp colrv1/build/NotoColorEmoji-noflags.ttf fonts/Noto-COLRv1-noflags.ttf
+cp colrv1/build/NotoColorEmoji.ttf 2D/fonts/Noto-COLRv1.ttf
+cp colrv1/build/NotoColorEmoji-noflags.ttf 2D/fonts/Noto-COLRv1-noflags.ttf
 
 # Post-process them
 python colrv1_postproc.py
@@ -45,7 +45,7 @@ python colrv1_postproc.py
 # Produce emojicompat variants
 # Add support for new sequences per https://github.com/googlefonts/emojicompat#support-new-unicode-sequences
 
-pushd fonts
+pushd 2D/fonts
 cp NotoColorEmoji.ttf NotoColorEmoji-emojicompat.ttf
 cp Noto-COLRv1.ttf Noto-COLRv1-emojicompat.ttf
 emojicompat --op setup --font NotoColorEmoji-emojicompat.ttf
@@ -55,6 +55,6 @@ emojicompat --op check --font Noto-COLRv1-emojicompat.ttf
 popd
 
 hb-subset --unicodes-file=flags-only-unicodes.txt \
-   --output-file=fonts/NotoColorEmoji-flagsonly.ttf \
-   fonts/NotoColorEmoji.ttf
+   --output-file=2D/fonts/NotoColorEmoji-flagsonly.ttf \
+   2D/fonts/NotoColorEmoji.ttf
 python update_flag_name.py

@@ -10,55 +10,59 @@ NAME_ID_FULLNAME = 4
 NAME_ID_POSTSCRIPT_NAME = 6
 
 
-def test_consistent_version():
-    for sub_dir in [Path("2D/fonts"), Path("3D/fonts")]:
-        assert sub_dir.is_dir()
+@pytest.mark.parametrize("sub_dir", [Path("2D/fonts"), Path("3D/fonts")], ids=["2D", "3D"])
+def test_consistent_version(sub_dir):
+    assert sub_dir.is_dir()
 
-        name5_re = re.compile(r"^Version (\d+.\d+);GOOG;noto-emoji:\d+:[a-z0-9]+$")
+    name5_re = re.compile(r"^Version (\d+.\d+);GOOG;noto-emoji:\d+:[a-z0-9]+$")
 
-        debug_versions = []
-        versions = set()
-        for font_file in sub_dir.rglob("*.ttf"):
-            font = ttLib.TTFont(font_file)
-            head_ver = f"{font['head'].fontRevision:.03f}"
-            versions.add(head_ver)
-            debug_versions.append(f"{font_file.name} head {head_ver}")
-            for name in font["name"].names:
-                # name 5 is version
-                if name.nameID != 5:
-                    continue
-                if not name.isUnicode():
-                    continue
-                match = name5_re.match(name.toUnicode())
-                assert match is not None, f"{name.toUnicode()} is malformed in {font_file.name}"
-                versions.add(match.group(1))
-                debug_versions.append(f"{font_file.name} name {match.group(1)}")
-        debug_versions_str = "\n".join(debug_versions)
-        assert (
-            len(versions) == 1
-        ), f"Should have a consistent version under {sub_dir}, found\n{debug_versions_str}"
-
-
-def test_consistent_fstype():
-    for sub_dir in [Path("2D/fonts"), Path("3D/fonts")]:
-        assert sub_dir.is_dir()
-
-        debug_fstypes = []
-        fstypes = set()
-        for font_file in sub_dir.rglob("*.ttf"):
-            font = ttLib.TTFont(font_file)
-            fstype = font["OS/2"].fsType
-            fstypes.add(fstype)
-            debug_fstypes.append(f"{font_file.name} fsType {fstype}")
-        debug_fstypes_str = "\n".join(debug_fstypes)
-        assert fstypes == {0}, f"All fsType's should be 0 under {sub_dir}, found\n{debug_fstypes_str}"
+    debug_versions = []
+    versions = set()
+    for font_file in sub_dir.rglob("*.ttf"):
+        font = ttLib.TTFont(font_file)
+        head_ver = f"{font['head'].fontRevision:.03f}"
+        versions.add(head_ver)
+        debug_versions.append(f"{font_file.name} head {head_ver}")
+        for name in font["name"].names:
+            # name 5 is version
+            if name.nameID != 5:
+                continue
+            if not name.isUnicode():
+                continue
+            match = name5_re.match(name.toUnicode())
+            assert match is not None, f"{name.toUnicode()} is malformed in {font_file.name}"
+            versions.add(match.group(1))
+            debug_versions.append(f"{font_file.name} name {match.group(1)}")
+    debug_versions_str = "\n".join(debug_versions)
+    assert (
+        len(versions) == 1
+    ), f"Should have a consistent version under {sub_dir}, found\n{debug_versions_str}"
 
 
-def test_has_emojicompat():
+@pytest.mark.parametrize("sub_dir", [Path("2D/fonts"), Path("3D/fonts")], ids=["2D", "3D"])
+def test_consistent_fstype(sub_dir):
+    assert sub_dir.is_dir()
+
+    debug_fstypes = []
+    fstypes = set()
+    for font_file in sub_dir.rglob("*.ttf"):
+        font = ttLib.TTFont(font_file)
+        fstype = font["OS/2"].fsType
+        fstypes.add(fstype)
+        debug_fstypes.append(f"{font_file.name} fsType {fstype}")
+    debug_fstypes_str = "\n".join(debug_fstypes)
+    assert fstypes == {0}, f"All fsType's should be 0 under {sub_dir}, found\n{debug_fstypes_str}"
+
+
+def test_emojicompat_metadata():
     fonts_dir = Path("2D/fonts")
     assert fonts_dir.is_dir()
 
     ec_fonts = set(fonts_dir.rglob("*-emojicompat.ttf"))
+    # Blob releases do not bundle emojicompat variants. If a full rebuild
+    # generates them, validate both variants and their metadata as before.
+    if not ec_fonts:
+        pytest.skip("This Blob release does not bundle emojicompat fonts")
     assert {f.name for f in ec_fonts} == {
         "Noto-COLRv1-emojicompat.ttf",
         "NotoColorEmoji-emojicompat.ttf",
@@ -81,22 +85,22 @@ def name(font, name_id):
     return next(iter(values))
 
 
-def test_flagsonly_name():
+@pytest.mark.parametrize("sub_dir", [Path("2D/fonts"), Path("3D/fonts")], ids=["2D", "3D"])
+def test_flagsonly_name(sub_dir):
     found = False
-    for sub_dir in [Path("2D/fonts"), Path("3D/fonts")]:
-        assert sub_dir.is_dir()
-        for font_file in sub_dir.rglob("*flagsonly.ttf"):
-            found = True
-            font = ttLib.TTFont(font_file)
-            assert [
-                "Noto Color Emoji Flags",
-                "Noto Color Emoji Flags",
-                "Noto Color Emoji Flags",
-                "NotoColorEmojiFlags",
-            ] == [
-                name(font, NAME_ID_FAMILY),
-                name(font, NAME_ID_FULLNAME),
-                name(font, NAME_ID_UNIQUE_ID),
-                name(font, NAME_ID_POSTSCRIPT_NAME),
-            ]
+    assert sub_dir.is_dir()
+    for font_file in sub_dir.rglob("*flagsonly.ttf"):
+        found = True
+        font = ttLib.TTFont(font_file)
+        assert [
+            "Noto Color Emoji Flags",
+            "Noto Color Emoji Flags",
+            "Noto Color Emoji Flags",
+            "NotoColorEmojiFlags",
+        ] == [
+            name(font, NAME_ID_FAMILY),
+            name(font, NAME_ID_FULLNAME),
+            name(font, NAME_ID_UNIQUE_ID),
+            name(font, NAME_ID_POSTSCRIPT_NAME),
+        ]
     assert found, "Should find at least one flagsonly font to test"

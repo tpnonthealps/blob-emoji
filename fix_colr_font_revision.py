@@ -16,7 +16,7 @@ def name(font, name_id):
 
 
 def main():
-    colr_font_files = sorted(p for p in (Path(__file__).parent / "fonts").iterdir() if p.name.startswith("Noto-COLRv1"))
+    colr_font_files = sorted(p for p in (Path(__file__).parent / "2D" / "fonts").iterdir() if p.name.startswith("Noto-COLRv1"))
 
     for colr_font_file in colr_font_files:
         cbdt_font_file = colr_font_file.with_stem(colr_font_file.stem.replace("Noto-COLRv1", "NotoColorEmoji"))

@@ -117,7 +117,7 @@ def build_svg_dir(dst_dir, clean=False, emoji_dir='', flags_dir=''):
 
 
 def main(argv):
-  DEFAULT_EMOJI_DIR = '[emoji]/svg'
+  DEFAULT_EMOJI_DIR = '[emoji]/2D/svg'
   DEFAULT_FLAGS_DIR = '[emoji]/third_party/region-flags/svg'
 
   parser = argparse.ArgumentParser(
